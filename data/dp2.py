@@ -9,7 +9,7 @@ import json
 ## Connection:
 MONGOPASS = os.getenv('MONGOPASS')
 uri = "mongodb+srv://cluster0.pnxzwgz.mongodb.net/"
-client = MongoClient(uri, username='JuliaPPfeiffer', password=MONGOPASS, connectTimeoutMS=200, retryWrites=True)
+client = MongoClient(uri, username='nmagee', password=MONGOPASS, connectTimeoutMS=200, retryWrites=True)
 # specify a database
 db = client.ktq3td
 # specify a collection
@@ -21,39 +21,24 @@ path = "."
 # Iterating Through the Data
 for (root, dirs, file) in os.walk(path):
     for f in file:
-        print(f)
+        # print(f)
         # loading/opening the json file
         with open(f) as file:
-            file_data = json.load(file)
-            print(file_data)
-            # inserting json file into collection
-        # if isinstance(file_data, list):
-        #     collection.insert_many(file_data)  
-        # else:
-        #     collection.insert_one(file_data)    
-
-
-        # need to find an 'exception' command 
-        # allows files to continue importing when error occurs
-
-
-## Importing: code to insert single JSON file into MongoDB
-
-# Loading or Opening the json file
-
-     
-# # Inserting the loaded data in the collection
-
-
-
-
-## Testing your collection----
-# use ktq3td               # specify your database name
-# db.ClassData.drop()    # where COLLECTION is the name of your collection
-
-
-## Import Count----- write this in count.txt
-
-# number of docs imported; 
-# number of docs that couldn't be imported- is this supposed to be 0?
-# number of corruped documents in the fileset
+            try:
+                file_data = json.load(file)
+                # print(file_data)
+        # Importing JSON file into MongoDB collection
+                try:
+                    if isinstance(file_data, list): #is file_data each ind. file? 
+                        collection.insert_many(file_data)
+                        print("Successful Import: ", f)
+                except Exception as e:
+                    print("Error Inserting File for ", f, ":", e)
+                    continue
+                else:
+                    collection.insert_one(file_data)
+                    print("Successful Import: ", f)     
+            except Exception as e:
+                print("Error Loading File for ", f, ": ", e)
+                
+client.close()   
